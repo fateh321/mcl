@@ -41,6 +41,7 @@ ifeq ($(MCL_USE_PROF),2)
   LDFLAGS+=-L /opt/intel/vtune_amplifier/lib64 -ljitprofiling -ldl
 endif
 ##################################################################
+MCL_USE_OMP=1
 MCL_LIB=$(LIB_DIR)/libmcl.a
 MCL_SNAME=mcl
 BN256_SNAME=mclbn256
