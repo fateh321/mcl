@@ -2040,7 +2040,7 @@ inline void millerLoopVecMT(Fp12& f, const G1* Pvec, const G2* Qvec, size_t n, s
 		f = 1;
 		return;
 	}
-#ifdef MCL_USE_OMP
+//#ifdef MCL_USE_OMP
 	if (cpuN == 0) cpuN = omp_get_num_procs();
 	if (cpuN <= 1 || n <= cpuN) {
 		millerLoopVec(f, Pvec, Qvec, n);
@@ -2058,10 +2058,10 @@ inline void millerLoopVecMT(Fp12& f, const G1* Pvec, const G2* Qvec, size_t n, s
 	for (size_t i = 1; i < cpuN; i++) {
 		f *= fs[i];
 	}
-#else
-	(void)cpuN;
-	millerLoopVec(f, Pvec, Qvec, n);
-#endif
+//#else
+//	(void)cpuN;
+//	millerLoopVec(f, Pvec, Qvec, n);
+//#endif
 }
 
 inline bool setMapToMode(int mode)
