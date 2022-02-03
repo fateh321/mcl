@@ -24,9 +24,9 @@ void mulByCofactorBLS12fast(T& Q, const T& P);
 #include <vector>
 #endif
 
-#ifdef MCL_USE_OMP
+//#ifdef MCL_USE_OMP
 #include <omp.h>
-#endif
+//#endif
 
 /*
 	set bit size of Fp and Fr
