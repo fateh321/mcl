@@ -2041,7 +2041,8 @@ inline void millerLoopVecMT(Fp12& f, const G1* Pvec, const G2* Qvec, size_t n, s
 		return;
 	}
 //#ifdef MCL_USE_OMP
-	if (cpuN == 0) cpuN = omp_get_num_procs();
+//	if (cpuN == 0) cpuN = omp_get_num_procs();
+    if (cpuN == 0) cpuN = 8;
 	if (cpuN <= 1 || n <= cpuN) {
 		millerLoopVec(f, Pvec, Qvec, n);
 		return;
