@@ -10,7 +10,7 @@
 #include <mcl/fp.hpp>
 #include <mcl/ecparam.hpp>
 #include <mcl/window_method.hpp>
-//#include <omp.h>
+#include <omp.h>
 #ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4458)
@@ -161,14 +161,15 @@ static size_t mulVecNGLVT(G& z, const G *xVec, const mpz_class *yVec, size_t n)
 	typedef mcl::FixedArray<int8_t, sizeof(F) * 8 / splitN + splitN> NafArray;
 	NafArray naf[N][splitN];
 	G tbl[N][splitN][tblSize];
-	bool b;
-	mpz_class u[splitN], y;
+//	bool b;
+//	mpz_class u[splitN], y;
 	size_t maxBit = 0;
 
 	if (n > N) n = N;
-//    #pragma omp parallel for
+    #pragma omp parallel for
 	for (size_t i = 0; i < n; i++) {
-//        mpz_class u[splitN], y;
+        bool b;
+        mpz_class u[splitN], y;
 		y = yVec[i];
 		y %= r;
 		if (y < 0) {
@@ -179,7 +180,7 @@ static size_t mulVecNGLVT(G& z, const G *xVec, const mpz_class *yVec, size_t n)
 		for (int j = 0; j < splitN; j++) {
 			gmp::getNAFwidth(&b, naf[i][j], u[j], w);
 			assert(b); (void)b;
-			if (naf[i][j].size() > maxBit) maxBit = naf[i][j].size();
+//			if (naf[i][j].size() > maxBit) maxBit = naf[i][j].size();
 		}
 
 		G P2;
@@ -195,6 +196,11 @@ static size_t mulVecNGLVT(G& z, const G *xVec, const mpz_class *yVec, size_t n)
 			}
 		}
 	}
+    for (size_t i = 0; i < n; i++) {
+        for (int j = 0; j < splitN; j++) {
+			if (naf[i][j].size() > maxBit) maxBit = naf[i][j].size();
+        }
+    }
 	z.clear();
 	for (size_t i = 0; i < maxBit; i++) {
 		const size_t bit = maxBit - 1 - i;
@@ -1542,16 +1548,30 @@ private:
 		NafArray naf[N];
 		EcT tbl[N][tblSize];
 		size_t maxBit = 0;
-		mpz_class y;
-//        #pragma omp parallel for
-		for (size_t i = 0; i < n; i++) {
+//		mpz_class y;
+//		for (size_t i = 0; i < n; i++) {
 //            mpz_class y;
+//            bool b;
+//			yVec[i].getMpz(&b, y);
+//			assert(b); (void)b;
+//			gmp::getNAFwidth(&b, naf[i], y, w);
+//			assert(b); (void)b;
+//			if (naf[i].size() > maxBit) maxBit = naf[i].size();
+//			EcT P2;
+//			EcT::dbl(P2, xVec[i]);
+//			tbl[i][0] = xVec[i];
+//			for (size_t j = 1; j < tblSize; j++) {
+//				EcT::add(tbl[i][j], tbl[i][j - 1], P2);
+//			}
+//		}
+        #pragma omp parallel for
+		for (size_t i = 0; i < n; i++) {
+            mpz_class y;
             bool b;
 			yVec[i].getMpz(&b, y);
 			assert(b); (void)b;
 			gmp::getNAFwidth(&b, naf[i], y, w);
 			assert(b); (void)b;
-			if (naf[i].size() > maxBit) maxBit = naf[i].size();
 			EcT P2;
 			EcT::dbl(P2, xVec[i]);
 			tbl[i][0] = xVec[i];
@@ -1559,7 +1579,11 @@ private:
 				EcT::add(tbl[i][j], tbl[i][j - 1], P2);
 			}
 		}
-		z.clear();
+        for (size_t i = 0; i < n; i++) {
+            if (naf[i].size() > maxBit) maxBit = naf[i].size();
+        }
+
+        z.clear();
 		for (size_t i = 0; i < maxBit; i++) {
 			EcT::dbl(z, z);
 			for (size_t j = 0; j < n; j++) {
