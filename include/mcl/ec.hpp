@@ -10,7 +10,7 @@
 #include <mcl/fp.hpp>
 #include <mcl/ecparam.hpp>
 #include <mcl/window_method.hpp>
-#include <omp.h>
+//#include <omp.h>
 #ifdef _MSC_VER
 	#pragma warning(push)
 	#pragma warning(disable : 4458)
@@ -162,13 +162,13 @@ static size_t mulVecNGLVT(G& z, const G *xVec, const mpz_class *yVec, size_t n)
 	NafArray naf[N][splitN];
 	G tbl[N][splitN][tblSize];
 	bool b;
-//	mpz_class u[splitN], y;
+	mpz_class u[splitN], y;
 	size_t maxBit = 0;
 
 	if (n > N) n = N;
-    #pragma omp parallel for
+//    #pragma omp parallel for
 	for (size_t i = 0; i < n; i++) {
-        mpz_class u[splitN], y;
+//        mpz_class u[splitN], y;
 		y = yVec[i];
 		y %= r;
 		if (y < 0) {
@@ -1542,10 +1542,10 @@ private:
 		NafArray naf[N];
 		EcT tbl[N][tblSize];
 		size_t maxBit = 0;
-//		mpz_class y;
-        #pragma omp parallel for
+		mpz_class y;
+//        #pragma omp parallel for
 		for (size_t i = 0; i < n; i++) {
-            mpz_class y;
+//            mpz_class y;
             bool b;
 			yVec[i].getMpz(&b, y);
 			assert(b); (void)b;
